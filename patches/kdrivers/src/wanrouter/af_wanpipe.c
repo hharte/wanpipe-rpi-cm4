@@ -33,6 +33,7 @@
 *
 ******************************************************************************/
 
+#include <linux/version.h>
 #include <linux/wanpipe_includes.h>
 #include <linux/wanpipe_defines.h>
 #include <linux/wanpipe.h>
@@ -600,7 +601,11 @@ static int wanpipe_accept(struct socket *sock, struct socket *newsock, int flags
 		return -EPROTOTYPE;
 
 	add_wait_queue(WAN_SK_SLEEP(sk),&wait);
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
 	current->state = TASK_INTERRUPTIBLE;
+#else
+	WRITE_ONCE(current->__state, TASK_INTERRUPTIBLE);
+#endif
 	for (;;){
 		skb = skb_dequeue(&sk->sk_receive_queue);
 		if (skb){
@@ -619,7 +624,11 @@ static int wanpipe_accept(struct socket *sock, struct socket *newsock, int flags
 		}
 		schedule();
 	}
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
 	current->state = TASK_RUNNING;
+#else
+	WRITE_ONCE(current->__state, TASK_RUNNING);
+#endif
 	remove_wait_queue(WAN_SK_SLEEP(sk),&wait);
 
 	if (err != 0)
