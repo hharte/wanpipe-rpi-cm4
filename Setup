@@ -2383,8 +2383,8 @@ WARNING: The Linux source in $SOURCEDIR has not been configured.
 	cd libsangoma
 	eval "./init-automake.sh  >> $CMP_LOG 2>> $CMP_LOG"
 	eval "./configure --prefix=/usr >> $CMP_LOG 2>> $CMP_LOG" 
-	eval "make clean >> $CMP_LOG 2>> $CMP_LOG" 
-	eval "make CC=$CC DESTDIR=$ROOT >> $CMP_LOG 2>> $CMP_LOG" 
+	eval "make -j4 clean >> $CMP_LOG 2>> $CMP_LOG"
+	eval "make -j4 CC=$CC DESTDIR=$ROOT >> $CMP_LOG 2>> $CMP_LOG"
 	if [ $? -eq 0 ]; then
 		echo -e "Done.\n\n"
 	else
@@ -2400,7 +2400,7 @@ WARNING: The Linux source in $SOURCEDIR has not been configured.
 	eval "./init-automake.sh  >> $CMP_LOG 2>> $CMP_LOG"
 	eval "./configure --prefix=/usr >> $CMP_LOG 2>> $CMP_LOG" 
 	eval "make clean >> $CMP_LOG 2>> $CMP_LOG" 
-	eval "make CC=$CC DESTDIR=$ROOT >> $CMP_LOG 2>> $CMP_LOG" 
+	eval "make -j4 CC=$CC DESTDIR=$ROOT >> $CMP_LOG 2>> $CMP_LOG"
 	if [ $? -eq 0 ]; then
 		echo -e "Done.\n\n"
 	else
@@ -2425,8 +2425,8 @@ WARNING: The Linux source in $SOURCEDIR has not been configured.
 		MAKEINC=$MAKEINC" ENABLE_WANPIPEMON_ZAP=YES " 
 	fi
 
-	echo "make CC=$CC SYSINC=$DRIVER_INC_DIR WAN_VIRTUAL=$ROOT WANINCDIR=$WANPIPE_INCLUDE_DIR $MAKEINC" >> $CMP_LOG 2>> $CMP_LOG
-	eval "make CC=$CC SYSINC=$DRIVER_INC_DIR WAN_VIRTUAL=$ROOT WANINCDIR=$WANPIPE_INCLUDE_DIR $MAKEINC >> $CMP_LOG 2>> $CMP_LOG"
+	echo  "make -j4 CC=$CC SYSINC=$DRIVER_INC_DIR WAN_VIRTUAL=$ROOT WANINCDIR=$WANPIPE_INCLUDE_DIR $MAKEINC" >> $CMP_LOG 2>> $CMP_LOG
+	eval  "make -j4 CC=$CC SYSINC=$DRIVER_INC_DIR WAN_VIRTUAL=$ROOT WANINCDIR=$WANPIPE_INCLUDE_DIR $MAKEINC >> $CMP_LOG 2>> $CMP_LOG"
 
 	if [ $? -eq 0 ]
 	then
@@ -2459,8 +2459,8 @@ WARNING: The Linux source in $SOURCEDIR has not been configured.
 	#		WANCFG_DEFS=$WANCFG_DEFS" -DDAHDI_$DAHDI_MAJOR$DAHDI_MINOR"
 	    fi
 	fi
-	echo "make -C wancfg all CC=$CC WAN_VIRTUAL=$ROOT WANINCDIR=$WANPIPE_INCLUDE_DIR $WANCFG_DEFS" >> $CMP_LOG 2>> $CMP_LOG
-	eval "make -C wancfg all CC=$CC WAN_VIRTUAL=$ROOT WANINCDIR=$WANPIPE_INCLUDE_DIR $WANCFG_DEFS >> $CMP_LOG 2>> $CMP_LOG"
+	echo "make -j4 -C wancfg all CC=$CC WAN_VIRTUAL=$ROOT WANINCDIR=$WANPIPE_INCLUDE_DIR $WANCFG_DEFS" >> $CMP_LOG 2>> $CMP_LOG
+	eval "make -j4 -C wancfg all CC=$CC WAN_VIRTUAL=$ROOT WANINCDIR=$WANPIPE_INCLUDE_DIR $WANCFG_DEFS >> $CMP_LOG 2>> $CMP_LOG"
 
 	if [ $? -eq 0 ]
 	then
@@ -2499,7 +2499,7 @@ WARNING: The Linux source in $SOURCEDIR has not been configured.
 			eval "./init-automake.sh  >> $CMP_LOG 2>> $CMP_LOG"
 			eval "./configure --prefix=/usr >> $CMP_LOG 2>> $CMP_LOG" 
 			eval "make clean >> $CMP_LOG 2>> $CMP_LOG" 
-			eval "make CC=$CC DESTDIR=$ROOT >> $CMP_LOG 2>> $CMP_LOG" 
+			eval "make -j4 CC=$CC DESTDIR=$ROOT >> $CMP_LOG 2>> $CMP_LOG"
 			if [ $? -eq 0 ]; then
 				echo -e "Done.\n\n"
 			else
@@ -2524,7 +2524,7 @@ WARNING: The Linux source in $SOURCEDIR has not been configured.
 		cd $PROD_HOME/api
 	
 		if [ -f Makefile ]; then
-			eval "make CC=$CC WANINCDIR=$WANPIPE_INCLUDE_DIR >> $CMP_LOG 2>> $CMP_LOG"
+			eval "make -j4 CC=$CC WANINCDIR=$WANPIPE_INCLUDE_DIR >> $CMP_LOG 2>> $CMP_LOG"
 			if [ $? -eq 0 ]; then
 				echo -e "Done.\n"
 			else
@@ -2543,7 +2543,7 @@ WARNING: The Linux source in $SOURCEDIR has not been configured.
 	if [ -d $PROD_HOME/util/wanec_client ] && [ -d $DRIVER_UPDATE_DIR/wanec ] ; then
 		echo -n "Compiling WANPIPE HWEC Utilities ..."
 		cd  $PROD_HOME/util/wanec_client
-		eval "make CC=$CC WANINCDIR=$WANPIPE_INCLUDE_DIR WANEC_DIR=$DRIVER_UPDATE_DIR/wanec >> $CMP_LOG 2>> $CMP_LOG "
+		eval "make -j4 CC=$CC WANINCDIR=$WANPIPE_INCLUDE_DIR WANEC_DIR=$DRIVER_UPDATE_DIR/wanec >> $CMP_LOG 2>> $CMP_LOG "
 		if [ $? -eq 0 ]; then
                     echo -e "Done.\n\n"
             	else
@@ -2757,14 +2757,14 @@ function update_redhat_as()
 
 function wan_get_kernel_flags()
 {
-#	echo "make -C $SOURCEDIR  M=$PWD drivers/net/wan/sdladrv 2> /dev/null"
+#	echo "make -j4 -C $SOURCEDIR  M=$PWD drivers/net/wan/sdladrv 2> /dev/null"
 
 	if [ ! -d $SOURCEDIR/wanpipe ]; then
 		mkdir -p $SOURCEDIR/wanpipe
 	fi
 	cp $DRIVER_UPDATE_DIR/src/net/sdladrv.c $SOURCEDIR/wanpipe 
 
-	tmp1=`make -C $SOURCEDIR  KBUILD_VERBOSE=0 KBUILD_MODPOST_WARN=1 M=$PWD wanpipe/sdladrv 2> /dev/null`
+	tmp1=`make -j4 -C $SOURCEDIR  KBUILD_VERBOSE=0 KBUILD_MODPOST_WARN=1 M=$PWD wanpipe/sdladrv 2> /dev/null`
 
 	#echo "TMP =---$tmp1---"
 
@@ -2845,7 +2845,7 @@ function build_kernel_module()
 			local_link=$local_link" $file.o "
 		done
 
-		echo "make MODULE_NAME=$modname OBJS=\"$ofiles\" M=$PWD CC=$CC KDIR=$SOURCEDIR \
+		echo "make -j4 MODULE_NAME=$modname OBJS=\"$ofiles\" M=$PWD CC=$CC KDIR=$SOURCEDIR \
                      EXTRA_CFLAGS=\"-D__LINUX__ $PROTOCOL_DEFINES $extra_flags \"" >> $CMP_BUILD
 
 		chmod 755 $CMP_BUILD
@@ -2856,7 +2856,7 @@ function build_kernel_module()
 			kverbose=$KBUILD_VERBOSE
 		fi
 
-		make MODULE_NAME=$modname OBJS="$ofiles" CC=$CC M=$PWD KBUILD_VERBOSE=$kverbose KBUILD_MODPOST_WARN=1 KDIR=$SOURCEDIR \
+		make -j4 MODULE_NAME=$modname OBJS="$ofiles" CC=$CC M=$PWD KBUILD_VERBOSE=$kverbose KBUILD_MODPOST_WARN=1 KDIR=$SOURCEDIR \
                      EXTRA_CFLAGS="-D__LINUX__ $PROTOCOL_DEFINES $extra_flags " >> $CMP_LOG 2>> $CMP_LOG 
 
 		if [ $? -ne 0 ]; then
@@ -2907,7 +2907,7 @@ function build_kernel_module()
 			echo " make MODULE_NAME=$modname OBJS=\"$ofiles\" CC=$CC M=$PWD KBUILD_VERBOSE=$KBUILD_VERBOSE KBUILD_MODPOST_WARN=$KBUILD_MODPOST_WARN KDIR=$SOURCEDIR \
                      	EXTRA_CFLAGS=\"-D__LINUX__ $PROTOCOL_DEFINES $extra_flags \""  >> $CMP_BUILD 
 
-			make MODULE_NAME=$modname OBJS="$ofiles" CC=$CC M=$PWD KBUILD_VERBOSE=$KBUILD_VERBOSE KBUILD_MODPOST_WARN=$KBUILD_MODPOST_WARN KDIR=$SOURCEDIR \
+			make -j4 MODULE_NAME=$modname OBJS="$ofiles" CC=$CC M=$PWD KBUILD_VERBOSE=$KBUILD_VERBOSE KBUILD_MODPOST_WARN=$KBUILD_MODPOST_WARN KDIR=$SOURCEDIR \
                      	EXTRA_CFLAGS="-D__LINUX__ $PROTOCOL_DEFINES $extra_flags " >> $CMP_LOG 2>> $CMP_LOG 
 		#	echo "ld $LD_ELF -r -o $modname.ko $modname.o $modname.mod.o" >> $CMP_BUILD 
 		#	$EVALCMD "ld $LD_ELF -r -o $modname.ko $modname.o $modname.mod.o"
@@ -3942,6 +3942,8 @@ ENDOFTEXT
 		 ARCH=i386
 		 ;;
 	ppc*)
+		 ;;
+	aarch64)
 		 ;;
 	*)	
 		echo "Error: Unsuppored architecture type $ARCH!"
