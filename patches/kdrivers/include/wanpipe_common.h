@@ -797,7 +797,11 @@ static __inline void wan_vfree(void* ptr)
 static __inline unsigned long wan_virt2bus(unsigned long* ptr)
 {
 #if defined(__LINUX__)
+# if  (LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0))
 	return virt_to_bus(ptr);
+# else
+	return virt_to_phys(ptr);
+# endif
 #elif defined(__FreeBSD__)
 	return vtophys((vm_offset_t)ptr);
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
@@ -816,7 +820,11 @@ static __inline unsigned long wan_virt2bus(unsigned long* ptr)
 static __inline unsigned long* wan_bus2virt(unsigned long virt_addr)
 {
 #if defined(__LINUX__)
+# if  (LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0))
 	return bus_to_virt(virt_addr);
+# else
+	return phys_to_virt(virt_addr);
+# endif
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 	return (unsigned long*)virt_addr;
 #elif defined(__WINDOWS__)
