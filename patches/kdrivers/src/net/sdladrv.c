@@ -151,7 +151,7 @@
 #if 1
 #define AFT_FUNC_DEBUG()
 #else
-#define AFT_FUNC_DEBUG()  DEBUG_EVENT("%s:%d\n",__FUNCTION__,__LINE__)
+#define AFT_FUNC_DEBUG()  printk(KERN_DEBUG "%s:%d\n",__FUNCTION__,__LINE__)
 #endif
 
 #if defined(__WINDOWS__)
@@ -235,6 +235,15 @@ static unsigned char wan_index_map[24][32][32];
 static unsigned char wan_index_cnt=0;
 #endif
 
+/* Gross hack to enable PCIe interrupts on Raspberry Pi CM4. */
+#if defined (__LINUX__)
+# if defined (__arm__) || defined (__aarch64__)
+#ifndef PCI_ASSIGN_IRQ_ADDR
+#error PCI_ASSIGN_IRQ_ADDR must be defined for Raspberry Pi CM4.
+#endif
+void (*hh_pci_assign_irq)(struct pci_dev *dev) = PCI_ASSIGN_IRQ_ADDR;
+# endif
+#endif /* defined (__LINUX__) */
 
 /****** Function Prototypes *************************************************/
 /* Entry Point for Low-Level function */
@@ -8584,14 +8593,18 @@ static int sdla_detect_aft(sdlahw_t* hw)
 		return err;
 	}
 
-	DEBUG_EVENT( "%s: AFT PCI memory at 0x%lX\n",
-				hw->devname, (unsigned long)hwcpu->mem_base_addr);
+	DEBUG_EVENT( "%s: AFT PCI memory at 0x%08llX\n",
+				hw->devname, hwcpu->mem_base_addr);
 
 #if defined(__LINUX__)
+# if defined (__arm__) || defined (__aarch64__)
+	DEBUG_EVENT("%s: AFT: calling hh_pci_assign_irq()\n", __FUNCTION__);
+	hh_pci_assign_irq(hwcard->u_pci.pci_dev);
+# endif /* defined (__arm__) || defined (__aarch64__) */
 	hwcpu->irq = hwcard->u_pci.pci_dev->irq;
 #else
 	sdla_pci_read_config_byte(hw, PCI_INT_LINE_BYTE, (u8*)&hwcpu->irq);
-#endif
+#endif /* defined(__LINUX__) */
         if(hwcpu->irq == PCI_IRQ_NOT_ALLOCATED) {
 		sdla_memory_unmap(hw);
                 DEBUG_EVENT( "%s: IRQ not allocated to AFT adapter\n",

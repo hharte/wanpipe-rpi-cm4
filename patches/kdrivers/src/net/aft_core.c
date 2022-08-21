@@ -3430,7 +3430,7 @@ static int new_if (wan_device_t* wandev, netdevice_t* dev, wanif_conf_t* conf)
 					int dchan=-1;
 					conf->active_ch=0;
 					conf->u.aft.tdmv_master_if=0;
-					wan_set_bit(i,&conf->active_ch);
+					conf->active_ch |= (1 << i);
 
 					if (wan_test_bit(i,&card->tdmv_conf.dchan)){
 						dchan=i;
@@ -11501,7 +11501,7 @@ static void aft_port_task (void * card_ptr, int arg)
 
 	if (wan_test_and_clear_bit(AFT_FE_SET_CLOCK,&card->u.aft.port_task_cmd)){
 		if (wan_test_bit(CARD_REF_OSC,&card->wandev.critical) && WAN_TE1_CLK(&card->fe) == WAN_MASTER_CLK) {
-			UINT8 tmp = WAN_TE1_REFCLK(&card->fe);
+			u8 tmp = WAN_TE1_REFCLK(&card->fe);
 		    WAN_TE1_REFCLK(&card->fe)=0;
 			aft_chip_set_clock(card);
 		    WAN_TE1_REFCLK(&card->fe)=tmp;

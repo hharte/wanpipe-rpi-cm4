@@ -203,7 +203,7 @@ typedef void __iomem*		sdla_mem_handle_t;
 #else
 typedef void *		        sdla_mem_handle_t;
 #endif
-typedef	unsigned long 		sdla_base_addr_t;
+typedef	resource_size_t		sdla_base_addr_t;
 typedef dma_addr_t		sdla_dma_addr_t;
 typedef struct pci_dev*		sdla_pci_dev_t;
 #elif defined(__WINDOWS__)

@@ -109,6 +109,8 @@ extern "C" {
 			#define OCT_MACH_ENDIAN		OCT_MACH_BIG_ENDIAN
 		#elif defined(__arm__)
 			#define OCT_MACH_ENDIAN		OCT_MACH_LITTLE_ENDIAN
+		#elif defined(__aarch64__)
+			#define OCT_MACH_ENDIAN		OCT_MACH_LITTLE_ENDIAN
 		#elif defined( CPU )
 			#if CPU==PPC860
 				#define OCT_MACH_ENDIAN		OCT_MACH_BIG_ENDIAN

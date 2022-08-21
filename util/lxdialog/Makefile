@@ -36,7 +36,7 @@ all: 	ncurses \
 lxdialog: $(OBJS)
 
 ncurses:
-	@x=`find $(ASTBROOT)/lib/ /lib/ /usr/lib/ /usr/lib64/ /usr/lib/i386-linux-gnu /usr/lib/x86_64-linux-gnu /usr/local/lib/ -maxdepth 1 -name 'libncurses.*' 2> /dev/null` ;\
+	@x=`find $(ASTBROOT)/lib/ /lib/ /usr/lib/ /usr/lib64/ /usr/lib/i386-linux-gnu /usr/lib/x86_64-linux-gnu /usr/lib/arm-linux-gnueabihf/ /usr/lib/aarch64-linux-gnu/ /usr/local/lib/ -maxdepth 1 -name 'libncurses.*' 2> /dev/null` ;\
 	if [ ! "$$x" ]; then \
 		echo -e "\007" ;\
 		echo ">> Unable to find the Ncurses libraries." ;\

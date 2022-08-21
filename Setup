@@ -3944,6 +3944,10 @@ ENDOFTEXT
 	ppc*)
 		 ;;
 	aarch64)
+		SDLADRV_EXTRA_DEFINES=-DPCI_ASSIGN_IRQ_ADDR=`grep pci_assign_irq /proc/kallsyms |awk 'NR==1{print "0x"$1}'`
+		 ;;
+	armv7l)
+		SDLADRV_EXTRA_DEFINES=-DPCI_ASSIGN_IRQ_ADDR=`grep pci_assign_irq /proc/kallsyms |awk 'NR==1{print "0x"$1}'`
 		 ;;
 	*)	
 		echo "Error: Unsuppored architecture type $ARCH!"
@@ -4253,7 +4257,7 @@ WANPIPE_OBJS=
 		SDLADRV_OBJS=$SDLADRV_OBJS"sdladrv_usb "
 	fi
 
-	build_kernel_module sdladrv "$SDLADRV_OBJS"
+	build_kernel_module sdladrv "$SDLADRV_OBJS" "$SDLADRV_EXTRA_DEFINES"
 	if [ -e $MODSYM ]; then
 		cp $MODSYM  $PROD_HOME/$MODSYM.sdladrv 
 	fi

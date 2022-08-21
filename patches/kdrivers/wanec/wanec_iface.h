@@ -71,7 +71,9 @@ enum {
 #define WAN_NUM_PLAYOUT_TONES	16
 #define WAN_MAX_TONE_LEN	100
 
+#if !defined(__arm__) && !defined(__aarch64__)	/* Packing causes unaligned accesses on ARM. */
 #pragma pack(1)
+#endif
 
 typedef struct wanec_config_
 {
@@ -217,7 +219,9 @@ typedef struct _OCTPCIDRV_USER_PROCESS_CONTEXT_
 #endif
 } tOCTPCIDRV_USER_PROCESS_CONTEXT, *tPOCTPCIDRV_USER_PROCESS_CONTEXT;
 
+#if !defined(__arm__) && !defined(__aarch64__)
 #pragma pack()
+#endif
 
 
 #if defined(WAN_KERNEL)
@@ -256,7 +260,9 @@ typedef struct _OCTPCIDRV_USER_PROCESS_CONTEXT_
 #define WAN_EC_POLL_DTMF_MUTE_ON	0x03
 #define WAN_EC_POLL_DTMF_MUTE_OFF	0x04
 
+#if !defined(__arm__) && !defined(__aarch64__)	/* Packing causes unaligned accesses on ARM. */
 #pragma pack(1)
+#endif
 
 typedef
 struct wan_ec_confbridge_
@@ -349,7 +355,9 @@ typedef struct wan_ec_
 	WAN_LIST_ENTRY(wan_ec_)				next;
 } wan_ec_t;
 
+#if !defined(__arm__) && !defined(__aarch64__)
 #pragma pack()
+#endif
 
 #if 0
 typedef struct wanec_lip_reg
